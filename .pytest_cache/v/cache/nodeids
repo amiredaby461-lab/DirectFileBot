@@ -1,0 +1,7 @@
+[
+  "tests/test_formatting.py::test_human_bytes",
+  "tests/test_formatting.py::test_progress_bar",
+  "tests/test_queue_repo.py::test_queue_repo",
+  "tests/test_url_service.py::test_http_url",
+  "tests/test_url_service.py::test_reject_ftp"
+]
