@@ -1,0 +1,15 @@
+{
+  "bot_enabled": true,
+  "maintenance_mode": false,
+  "max_file_size_mb": 1950,
+  "per_user_queue_limit": 5,
+  "download_retry": 3,
+  "upload_retry": 3,
+  "poll_timeout_seconds": 25,
+  "workflow_sleep_seconds": 5,
+  "allowed_user_ids": [],
+  "blacklisted_user_ids": [],
+  "admin_ids": [
+    275153663
+  ]
+}
