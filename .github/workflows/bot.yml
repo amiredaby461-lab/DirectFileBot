@@ -1,0 +1,54 @@
+name: Direct File Transfer Bot
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: direct-file-transfer-bot
+  cancel-in-progress: false
+
+jobs:
+  run-bot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run bot cycle
+        env:
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+          ADMIN_IDS: ${{ secrets.ADMIN_IDS }}
+          ALLOWED_USER_IDS: ${{ secrets.ALLOWED_USER_IDS }}
+          BLACKLISTED_USER_IDS: ${{ secrets.BLACKLISTED_USER_IDS }}
+          BOT_USERNAME: ${{ vars.BOT_USERNAME }}
+          BOT_NAME: ${{ vars.BOT_NAME }}
+          ENABLE_BOT: "1"
+        run: python bot.py --once --poll-seconds 25
+
+      - name: Commit state changes
+        if: success() || failure()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add state/*.json state/*.jsonl || true
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: update bot state"
+            git push
+          fi
